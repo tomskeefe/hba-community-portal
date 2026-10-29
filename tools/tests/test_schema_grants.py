@@ -5,7 +5,8 @@ import re
 from pathlib import Path
 
 SUPA = Path(__file__).resolve().parents[2] / "supabase"
-TABLE_GRANT = re.compile(r"^grant\s+([A-Z, ]+)\s+on\s+(public\.\w+)\s+to\s+(\w+);", re.I | re.M)
+# Statements may span lines (schema.sql is auto-formatted), so whitespace includes newlines.
+TABLE_GRANT = re.compile(r"^grant\s+([A-Z,\s]+?)\s+on\s+(?:table\s+)?(public\.\w+)\s+to\s+(\w+)", re.I | re.M)
 GRANT = re.compile(r"grant\s+[a-z,\s]*?\b(update|insert|select)\s*\(([^)]*)\)\s*on\s+(?:table\s+)?([\w.]+)\s+to\s+(\w+)", re.I)
 
 

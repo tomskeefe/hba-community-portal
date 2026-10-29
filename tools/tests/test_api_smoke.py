@@ -499,7 +499,9 @@ def test_every_named_constraint_is_in_the_schema():
     source = ast.parse((repo / "server" / "hba" / "supabase.py").read_text(encoding="utf-8"))
     messages = next(ast.literal_eval(n.value) for n in source.body
                     if isinstance(n, ast.Assign) and getattr(n.targets[0], "id", "") == "CONSTRAINT_MESSAGES")
-    names = set(re.findall(r"constraint (\w+) (?:CHECK|UNIQUE|PRIMARY KEY)", schema)) | set(re.findall(r"CREATE UNIQUE INDEX (\w+)", schema))
+    # Either keyword case, any line breaks: schema.sql is auto-formatted.
+    names = (set(re.findall(r"constraint\s+(\w+)\s+(?:check|unique|primary\s+key)", schema, re.I))
+             | set(re.findall(r"create\s+unique\s+index\s+(?:if\s+not\s+exists\s+)?(\w+)", schema, re.I)))
     assert set(messages) <= names, set(messages) - names
     assert not [m for m in messages.values() if "!" in m]
 

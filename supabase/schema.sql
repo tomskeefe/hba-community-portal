@@ -1705,7 +1705,7 @@ create table public.hba_settings (
   updated_at timestamptz not null default now(),
   constraint hba_settings_pkey primary key (key),
   constraint hba_settings_key_check check ((key ~ '^[a-z_]{3,60}$'::text)),
-  constraint hba_settings_value_check check ((length(value) <= 2000))
+  constraint hba_settings_value_check check ((length(value) <= 100000))
 );
 
 create table public.hba_sms_consent_log (
@@ -6728,3 +6728,13 @@ authenticated;
 grant
 execute on function public.hba_vote_counts () to anon,
 authenticated;
+
+-- Column-level update grants: these tables may only be edited in the listed columns (row-level security decides
+-- which rows). Same as supabase/migrations/002_column_update_grants.sql.
+grant update(title,issue_date,body,state,file_path,original_name,issue_precision,original_path) on public.hba_newsletters to authenticated;
+grant update(meeting_id,meeting_date,meeting_time,title,location,called_to_order,adjourned,attendees,body,motions,action_items,state,approved_on,approved_note,file_path,original_name) on public.hba_meeting_minutes to authenticated;
+grant update(title,category,description,location,task_date,task_time,capacity,state,photo_path) on public.hba_volunteer_tasks to authenticated;
+grant update(opted_in) on public.hba_volunteer_email_preferences to authenticated;
+grant update(transaction_date,direction,category_code,payee,amount,reference,memo,cleared,voided,bank_account_id) on public.hba_check_register to authenticated;
+grant update(amount,basis,source_note) on public.hba_category_budgets to authenticated;
+grant update(category,message) on public.hba_sms_drafts to authenticated;
